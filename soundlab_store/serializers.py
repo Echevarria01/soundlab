@@ -1,14 +1,40 @@
 # soundlab_store/serializers.py
 
 from rest_framework import serializers
-from .models import Category, Product
+from .models import Cliente, Orden, Pago, Producto, Instrumento, Administrador, Carrito
 
-class CategorySerializer(serializers.ModelSerializer):
+class ClienteSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Category
+        model = Cliente
         fields = '__all__'
 
-class ProductSerializer(serializers.ModelSerializer):
+class OrdenSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Product
+        model = Orden
         fields = '__all__'
+
+class PagoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pago
+        fields = '__all__'
+
+class ProductoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Producto
+        fields = '__all__'
+
+class InstrumentoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Instrumento
+        fields = '__all__'
+
+class AdministradorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Administrador
+        fields = '__all__'
+
+class CarritoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Carrito
+        fields = '__all__'
+
