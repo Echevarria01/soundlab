@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'soundlab_store',
-    'usuario',  
+    'usuario',
+    'soundlab_api',  
 ]
 
 REST_FRAMEWORK = {
@@ -145,3 +146,5 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+AUTH_USER_MODEL = 'usuario.Usuario'

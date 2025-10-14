@@ -7,10 +7,11 @@ from rest_framework import viewsets
 from .models import Category, Product
 from .serializers import CategorySerializer, ProductSerializer
 from django.http import HttpResponse
-from soundlab_store.views import home
+
 
 def home(request):
-    return HttpResponse("¡Hola! Esta es la página de inicio.")
+    return HttpResponse("Bienvenido a SoundLab Store API")
+
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
