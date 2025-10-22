@@ -1,46 +1,61 @@
-from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
-from django.contrib.auth import authenticate, login, logout
+from rest_framework import status
+from django.contrib.auth import authenticate, logout
+from rest_framework.authtoken.models import Token
+from .serializers import RegisterSerializer, LoginSerializer
 from django.contrib.auth import get_user_model
-from .serializers import UsuarioSerializer
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
-Usuario = get_user_model()
+User = get_user_model()
 
 
 class RegisterView(APIView):
-    permission_classes = [AllowAny]
-
+    """
+    Permite registrar un nuevo usuario.
+    """
     def post(self, request):
-        serializer = UsuarioSerializer(data=request.data)
+        serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
-            user = Usuario.objects.create_user(
-                username=serializer.validated_data['username'],
-                email=serializer.validated_data.get('email'),
-                password=request.data.get('password'),
-                first_name=serializer.validated_data.get('first_name', ''),
-                last_name=serializer.validated_data.get('last_name', '')
-            )
-            return Response({"message": "Usuario registrado correctamente."}, status=status.HTTP_201_CREATED)
+            user = serializer.save()
+            Token.objects.create(user=user)
+            return Response({'message': 'Usuario creado correctamente ✅'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
-    permission_classes = [AllowAny]
-
+    """
+    Permite iniciar sesión de un usuario.
+    """
     def post(self, request):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return Response({"message": "Inicio de sesión exitoso."})
-        return Response({"error": "Credenciales inválidas."}, status=status.HTTP_401_UNAUTHORIZED)
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            username = serializer.validated_data['username']
+            password = serializer.validated_data['password']
+            user = authenticate(username=username, password=password)
+            if user:
+                token, _ = Token.objects.get_or_create(user=user)
+                return Response({
+                    'message': 'Login exitoso ✅',
+                    'token': token.key
+                }, status=status.HTTP_200_OK)
+            return Response({"error": "Credenciales inválidas ❌"}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class LogoutView(APIView):
+    """
+    Cierra la sesión del usuario (permite logout sin token para Postman).
+    """
     def post(self, request):
         logout(request)
-        return Response({"message": "Sesión cerrada correctamente."})
+        return Response({'message': 'Logout exitoso 👋'}, status=status.HTTP_200_OK)
+
+
+
+
+
+
 
