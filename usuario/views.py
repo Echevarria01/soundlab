@@ -5,6 +5,7 @@ from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth import get_user_model
 from .serializers import UsuarioSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
 
 Usuario = get_user_model()
 
@@ -30,13 +31,22 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        username = request.data.get('username')
-        password = request.data.get('password')
+        username = request.data.get("username")
+        password = request.data.get("password")
+
         user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return Response({"message": "Inicio de sesión exitoso."})
-        return Response({"error": "Credenciales inválidas."}, status=status.HTTP_401_UNAUTHORIZED)
+        if user:
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                "message": "Inicio de sesión exitoso ✅",
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+            }, status=status.HTTP_200_OK)
+
+        return Response(
+            {"error": "Credenciales inválidas ❌"},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
 
 
 class LogoutView(APIView):
