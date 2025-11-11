@@ -88,7 +88,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'soundlab_backend.wsgi.application'
-
+ROOT_URLCONF = 'soundlab_backend.urls'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
