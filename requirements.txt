@@ -1,4 +1,6 @@
 asgiref==3.10.0
+cffi==2.0.0
+cryptography==46.0.3
 dj-database-url==3.0.1
 Django==5.2.2
 django-cors-headers==4.9.0
@@ -8,6 +10,7 @@ gunicorn==23.0.0
 mysqlclient==2.2.7
 packaging==25.0
 pillow==11.3.0
+pycparser==2.23
 PyJWT==2.10.1
 PyMySQL==1.1.2
 python-decouple==3.8
