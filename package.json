@@ -1,0 +1,26 @@
+{
+  "name": "soundlab",
+  "version": "1.0.0",
+  "description": "Tienda de Instrumentos de Musica Online\r # 🎧 SoundLab - E-commerce de Instrumentos Musicales",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Echevarria01/soundlab.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Echevarria01/soundlab/issues"
+  },
+  "homepage": "https://github.com/Echevarria01/soundlab#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "mysql2": "^3.15.3"
+  }
+}

@@ -1,18 +1,19 @@
-# soundlab_store/urls.py
-
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import CategoryViewSet, ProductViewSet
-from django.contrib import admin
-from soundlab_store.views import home
+from .views import CategoryViewSet, ProductViewSet, OrderListCreateView, home
 
-
+# -------------------- Router para viewsets --------------------
 router = DefaultRouter()
-router.register(r'categories', CategoryViewSet)
-router.register(r'products', ProductViewSet)
+router.register(r'categories', CategoryViewSet, basename='category')
+router.register(r'products', ProductViewSet, basename='product')
 
+# -------------------- URLs adicionales --------------------
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include('soundlab_api.urls')),
-    path('', home),  # esta es la raíz
+    path('', home, name='home'),
+    path('orders/', OrderListCreateView.as_view(), name='order-create'),
+    path('', include(router.urls)),
+    path("api/user/", include("usuario.urls")),  # ✅ correcto
 ]
+
+
+

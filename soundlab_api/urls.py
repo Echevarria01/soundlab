@@ -1,7 +1,21 @@
-from django.urls import path
-from . import views
+# soundlab_api/urls.py
+from django.urls import path, include
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from .views import RegisterView, UserProfileView
+from django.conf import settings
+from django.contrib import admin
+from django.conf.urls.static import static
+
 
 urlpatterns = [
-    path('', views.index),  # o la vista que quieras probar
+    path("admin/", admin.site.urls),
+    path("api/user/", include("usuario.urls")),  # 👈 Importante
+    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("", include("soundlab_store.urls")),
+    path('api/orders/', include('orders.urls')),
+
 ]
 
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
