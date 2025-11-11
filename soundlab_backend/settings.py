@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-x#d(7e=wnp10aong6lzdajha9zy$6u+&@hpcd2zpk46-jst0y)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['tu-proyecto-production.up.railway.app']
+ALLOWED_HOSTS = ["soundlab.store", "rhbk59zy.up.railway.app"]
 
 
 
@@ -148,7 +148,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -163,3 +163,4 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 DEBUG = True
+
