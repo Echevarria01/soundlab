@@ -1,2 +1,3 @@
-web: gunicorn soundlab_backend.wsgi
+web: gunicorn soundlab_backend.wsgi:application --log-file -
+
 
