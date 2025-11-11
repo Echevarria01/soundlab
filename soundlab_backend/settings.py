@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-x#d(7e=wnp10aong6lzdajha9zy$6u+&@hpcd2zpk46-jst0y)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["soundlab.store", "rhbk59zy.up.railway.app"]
+ALLOWED_HOSTS = ['*']
 
 
 
