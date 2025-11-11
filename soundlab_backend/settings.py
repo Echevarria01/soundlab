@@ -27,7 +27,8 @@ SECRET_KEY = 'django-insecure-x#d(7e=wnp10aong6lzdajha9zy$6u+&@hpcd2zpk46-jst0y)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['soundlab.up.railway.app', 'localhost']
+
 
 
 # Application definition
@@ -69,7 +70,7 @@ MIDDLEWARE = [
 ]
 
 
-ROOT_URLCONF = 'config.urls'
+ROOT_URLCONF = 'soundlab_backend.urls'
 
 TEMPLATES = [
     {
@@ -86,7 +87,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+WSGI_APPLICATION = 'soundlab_backend.wsgi.application'
 
 
 # Database

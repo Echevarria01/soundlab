@@ -8,3 +8,6 @@ PyMySQL==1.1.2
 python-decouple==3.8
 sqlparse==0.5.3
 tzdata==2025.2
+gunicorn==23.0.0
+whitenoise
+drf-spectacular
