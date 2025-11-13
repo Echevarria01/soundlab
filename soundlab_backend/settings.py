@@ -75,16 +75,14 @@ WSGI_APPLICATION = 'soundlab_backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': config('MYSQL_DATABASE', default='soundlab'),
-        'USER': config('MYSQLUSER', default='root'),
-        'PASSWORD': config('MYSQLPASSWORD', default='123456'),
-        'HOST': config('MYSQLHOST', default='127.0.0.1'),
-        'PORT': config('MYSQLPORT', default='3306'),
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        },
+        'NAME': 'railway',  # o el nombre que te da Railway
+        'USER': 'root',     # o el que diga Railway
+        'PASSWORD': 'QsMudtIzMdpTWMoEFlLbylvgmIUGmJmG',  # tu pass
+        'HOST': 'shinkansen.proxy.rlwy.net',  # el host que te da Railway
+        'PORT': '19227',    # el puerto de Railway
     }
 }
+
 
 
 AUTH_PASSWORD_VALIDATORS = [
