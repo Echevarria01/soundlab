@@ -1,9 +1,9 @@
 from rest_framework import viewsets, status, permissions
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from .models import Order, OrderItem
 from .serializers import OrderSerializer
 from soundlab_store.models import Product
-from rest_framework.decorators import action
 
 class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
@@ -29,11 +29,17 @@ class OrderViewSet(viewsets.ModelViewSet):
         ]
         for field in required_fields:
             if field not in data:
-                return Response({"error": f"Falta el campo {field}"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {"error": f"Falta el campo {field}"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
         items = data.get("items")
         if not isinstance(items, list) or len(items) == 0:
-            return Response({"error": "Debe haber al menos un ítem en el pedido"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Debe haber al menos un ítem en el pedido"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         order = Order.objects.create(
             user=user,
@@ -51,7 +57,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                 product = Product.objects.get(id=item['product'])
             except Product.DoesNotExist:
                 order.delete()
-                return Response({"error": f"Producto con id {item['product']} no existe"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {"error": f"Producto con id {item['product']} no existe"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
             subtotal = product.price * item.get('quantity', 1)
             total += subtotal
@@ -66,10 +75,11 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         order.total = total
         order.save()
+
         serializer = OrderSerializer(order)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    # 👇 NUEVO: acción admin para actualizar estado
+    # ---- ADMIN: actualizar estado ----
     @action(detail=True, methods=['patch'], permission_classes=[permissions.IsAdminUser])
     def update_status(self, request, pk=None):
         order = self.get_object()
@@ -84,7 +94,19 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         order.status = new_status
         order.save()
-        return Response({"message": f"Estado del pedido #{order.id} cambiado a '{new_status}'"}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": f"Estado del pedido #{order.id} cambiado a '{new_status}'"},
+            status=status.HTTP_200_OK
+        )
+
+    # ---- FIX CORS: permitir OPTIONS sin token ----
+    def options(self, request, *args, **kwargs):
+        response = Response(status=200)
+        response['Access-Control-Allow-Origin'] = 'https://soundlabstore.netlify.app'
+        response['Access-Control-Allow-Methods'] = 'GET, POST, PATCH, PUT, DELETE, OPTIONS'
+        response['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+        return response
+
 
 
 
