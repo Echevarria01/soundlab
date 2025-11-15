@@ -5,18 +5,20 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 urlpatterns = [
     path("admin/", admin.site.urls),
 
-    # AUTH JWT
+    # JWT
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 
-    # USUARIOS (registro, login, perfil)
+    # Usuario
     path("api/user/", include("usuario.urls")),
 
-    # STORE
-    path("", include("soundlab_store.urls")),
+    # Productos y categorías
+    path("api/", include("soundlab_store.urls")),
 
-    # ORDERS
+    # Orders
     path("api/orders/", include("orders.urls")),
 ]
+
+
 
 
