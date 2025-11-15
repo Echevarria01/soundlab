@@ -6,7 +6,9 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
-from .serializers import UsuarioSerializer
+from .serializers import UsuarioSerializer, MyTokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 
 Usuario = get_user_model()
 
@@ -88,3 +90,5 @@ class UserProfileView(APIView):
         serializer = UsuarioSerializer(request.user)
         return Response(serializer.data)
 
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer

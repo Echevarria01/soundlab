@@ -139,7 +139,8 @@ AUTH_USER_MODEL = 'usuario.Usuario'
 # ------------------------------------------------------------------
 
 CORS_ALLOWED_ORIGINS = [
-    "https://soundlabstore.netlify.app",  # 👈 FRONTEND PRODUCCIÓN
+    "https://soundlabstore.netlify.app",
+    "http://localhost:3000",  # 👈 FRONTEND PRODUCCIÓN
 ]
 
 CORS_ALLOW_CREDENTIALS = True
