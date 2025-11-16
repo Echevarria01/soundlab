@@ -8,31 +8,29 @@ def api_root(request):
         "api": "SoundLab Backend",
         "status": "online",
         "endpoints": {
-            "auth": "/api/token/",
-            "auth_refresh": "/api/token/refresh/",
-            "user": "/api/user/",
-            "store": "/api/",
-            "orders": "/api/orders/"
+            "auth": "/token/",
+            "auth_refresh": "/token/refresh/",
+            "user": "/user/",
+            "store": "/",
+            "orders": "/orders/"
         }
     })
 
 urlpatterns = [
-    # Ruta raíz
     path("", api_root),
 
-    # Django admin
     path("admin/", admin.site.urls),
 
-    # JWT
-    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    # JWT OFICIAL (¡SIN /api/ ADELANTE!)
+    path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 
-    # Usuario
-    path("api/user/", include("usuario.urls")),
+    # Usuario (PERFIL - NO LOGIN)
+    path("user/", include("usuario.urls")),
 
-    # Productos y categorías
-    path("api/", include("soundlab_store.urls")),
+    # Productos
+    path("", include("soundlab_store.urls")),
 
     # Orders
-    path("api/orders/", include("orders.urls")),
+    path("orders/", include("orders.urls")),
 ]
