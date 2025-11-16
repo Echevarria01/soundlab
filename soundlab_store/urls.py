@@ -8,9 +8,9 @@ router.register(r'products', ProductViewSet, basename='product')
 
 urlpatterns = [
     path('', home, name='home'),
-    path('orders/', OrderListCreateView.as_view(), name='order-create'),
     path('', include(router.urls)),
 ]
+
 
 
 

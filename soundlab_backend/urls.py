@@ -21,14 +21,14 @@ urlpatterns = [
 
     path("admin/", admin.site.urls),
 
-    # JWT OFICIAL (¡SIN /api/ ADELANTE!)
+    # JWT
     path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 
-    # Usuario (PERFIL - NO LOGIN)
+    # Usuario
     path("user/", include("usuario.urls")),
 
-    # Productos
+    # Productos + Home
     path("", include("soundlab_store.urls")),
 
     # Orders

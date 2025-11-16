@@ -1,11 +1,10 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import OrderViewSet
+from django.urls import path
+from soundlab_store.views import OrderListCreateView
 
-router = DefaultRouter()
-router.register(r'', OrderViewSet, basename='orders')
+urlpatterns = [
+    path('', OrderListCreateView.as_view(), name='order-create'),
+]
 
-urlpatterns = router.urls
 
 
 
