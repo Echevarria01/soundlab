@@ -1,8 +1,26 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.http import JsonResponse
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+def api_root(request):
+    return JsonResponse({
+        "api": "SoundLab Backend",
+        "status": "online",
+        "endpoints": {
+            "auth": "/api/token/",
+            "auth_refresh": "/api/token/refresh/",
+            "user": "/api/user/",
+            "store": "/api/",
+            "orders": "/api/orders/"
+        }
+    })
+
 urlpatterns = [
+    # Ruta raíz
+    path("", api_root),
+
+    # Django admin
     path("admin/", admin.site.urls),
 
     # JWT
@@ -18,7 +36,3 @@ urlpatterns = [
     # Orders
     path("api/orders/", include("orders.urls")),
 ]
-
-
-
-

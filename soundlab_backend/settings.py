@@ -28,10 +28,10 @@ INSTALLED_APPS = [
 
     "corsheaders",
     "rest_framework",
+    "rest_framework_simplejwt",
 
     'soundlab_store',
     'usuario',
-    'soundlab_api',
     'orders',
 ]
 
@@ -124,8 +124,11 @@ USE_TZ = True
 # STATIC & MEDIA
 # ------------------------------------------------------------------
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# ⚠️ FIX: Removido porque Railway NO tiene carpeta /static local
+STATICFILES_DIRS = []  
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -137,10 +140,9 @@ AUTH_USER_MODEL = 'usuario.Usuario'
 # ------------------------------------------------------------------
 # CORS CONFIG (Netlify → Railway)
 # ------------------------------------------------------------------
-
 CORS_ALLOWED_ORIGINS = [
     "https://soundlabstore.netlify.app",
-    "http://localhost:3000",  # 👈 FRONTEND PRODUCCIÓN
+    "http://localhost:3000",  # desarrollo local
 ]
 
 CORS_ALLOW_CREDENTIALS = True
