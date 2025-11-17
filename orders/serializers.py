@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Order, OrderItem
-from soundlab_store.models import Product
+
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(read_only=True)
@@ -38,28 +38,29 @@ class OrderSerializer(serializers.ModelSerializer):
         items_data = validated_data.pop('items')
         user = self.context['request'].user
 
-        # Crear la orden sin total aún
         order = Order.objects.create(user=user, **validated_data)
 
         total = 0
         for item_data in items_data:
             product = item_data['product']
-            subtotal = product.price * item_data['quantity']
+            quantity = item_data['quantity']
+
+            subtotal = product.price * quantity
             total += subtotal
 
             OrderItem.objects.create(
                 order=order,
                 product=product,
                 product_name=product.name,
-                quantity=item_data['quantity'],
+                quantity=quantity,
                 price=product.price
             )
 
-        # Guardar el total calculado
         order.total = total
         order.save()
 
         return order
+
 
 
 

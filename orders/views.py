@@ -5,16 +5,24 @@ from .models import Order, OrderItem
 from .serializers import OrderSerializer
 from soundlab_store.models import Product
 
+
 class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    # ================================
+    #   QUERIES: Admin ve todo,
+    #   usuarios ven lo suyo
+    # ================================
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
             return Order.objects.all().order_by('-created_at')
         return Order.objects.filter(user=user).order_by('-created_at')
 
+    # ================================
+    #   CREAR PEDIDOS
+    # ================================
     def create(self, request, *args, **kwargs):
         user = request.user
         data = request.data
@@ -27,6 +35,8 @@ class OrderViewSet(viewsets.ModelViewSet):
             'shipping_phone',
             'items'
         ]
+
+        # Validación de campos obligatorios
         for field in required_fields:
             if field not in data:
                 return Response(
@@ -41,6 +51,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        # Crear orden vacía inicialmente
         order = Order.objects.create(
             user=user,
             payment_method=data['payment_method'],
@@ -51,6 +62,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             total=0
         )
 
+        # Crear ítems y calcular total
         total = 0
         for item in items:
             try:
@@ -62,50 +74,55 @@ class OrderViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            subtotal = product.price * item.get('quantity', 1)
+            quantity = item.get('quantity', 1)
+            subtotal = product.price * quantity
             total += subtotal
 
             OrderItem.objects.create(
                 order=order,
                 product=product,
                 product_name=product.name,
-                quantity=item.get('quantity', 1),
+                quantity=quantity,
                 price=product.price,
             )
 
         order.total = total
         order.save()
 
-        serializer = OrderSerializer(order)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
 
-    # ---- ADMIN: actualizar estado ----
+    # ================================
+    #   ADMIN: actualizar estado
+    # ================================
     @action(detail=True, methods=['patch'], permission_classes=[permissions.IsAdminUser])
     def update_status(self, request, pk=None):
         order = self.get_object()
         new_status = request.data.get("status")
 
-        valid_statuses = ['pending', 'paid', 'cancelled', 'rejected']
+        valid_statuses = [choice[0] for choice in Order.STATUS_CHOICES]
+
         if new_status not in valid_statuses:
             return Response(
-                {"error": "Estado inválido. Usa: pending, paid, cancelled o rejected"},
+                {"error": f"Estado inválido. Usa uno de: {valid_statuses}"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         order.status = new_status
         order.save()
-        return Response(
-            {"message": f"Estado del pedido #{order.id} cambiado a '{new_status}'"},
-            status=status.HTTP_200_OK
-        )
 
-    # ---- FIX CORS: permitir OPTIONS sin token ----
+        return Response(OrderSerializer(order).data, status=status.HTTP_200_OK)
+
+    # ================================
+    #   CORS para OPTIONS
+    # ================================
     def options(self, request, *args, **kwargs):
         response = Response(status=200)
         response['Access-Control-Allow-Origin'] = 'https://soundlabstore.netlify.app'
         response['Access-Control-Allow-Methods'] = 'GET, POST, PATCH, PUT, DELETE, OPTIONS'
         response['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
         return response
+
+
 
 
 
