@@ -5,10 +5,12 @@ from .models import Order, OrderItem
 class OrderItemSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(read_only=True)
     price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    description = serializers.CharField(source='product.description', read_only=True)  # Añadimos la descripción
 
     class Meta:
         model = OrderItem
-        fields = ['id', 'product', 'product_name', 'quantity', 'price']
+        fields = ['id', 'product', 'product_name', 'quantity', 'price', 'description']  # Incluir descripción
+
 
 
 class OrderSerializer(serializers.ModelSerializer):

@@ -12,25 +12,26 @@ def api_root(request):
             "auth_refresh": "/token/refresh/",
             "user": "/user/",
             "store": "/store/",
-            "orders": "/orders/"
+            "orders": "/api/orders/"  # Este es el endpoint correcto
         }
     })
 
 urlpatterns = [
-    path("", api_root),
+    path("", api_root),  # Página principal de la API
 
-    path("admin/", admin.site.urls),
+    path("admin/", admin.site.urls),  # Admin
 
-    # JWT
+    # JWT Token
     path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 
     # Usuario
-    path("user/", include("usuario.urls")),
+    path("user/", include("usuario.urls")),  # Ruta de usuario
 
     # Productos + Home
-    path("store/", include("soundlab_store.urls")),  # prefijo store/
+    path("store/", include("soundlab_store.urls")),  # Ruta de productos
 
-    # Orders
-    path("orders/", include("orders.urls")),
+    # Orders - ruta API de orders
+    path("api/", include("orders.urls")),  # Asegúrate de que esté con el prefijo /api/
 ]
+

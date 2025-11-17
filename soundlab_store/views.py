@@ -4,8 +4,8 @@ from django.http import HttpResponse
 from .models import Category, Product, Order, OrderItem
 from .serializers import CategorySerializer, ProductSerializer, OrderSerializer, OrderItemSerializer
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
 from rest_framework.views import APIView
-from rest_framework import status
 
 # -------------------- Home --------------------
 def home(request):
@@ -25,7 +25,6 @@ class ProductViewSet(viewsets.ModelViewSet):
         context = super().get_serializer_context()
         context["request"] = self.request  # ✅ Necesario para construir la URL completa de imagen
         return context
-
 
 # -------------------- Order --------------------
 class OrderListCreateView(generics.ListCreateAPIView):
@@ -68,6 +67,33 @@ class OrderListCreateView(generics.ListCreateAPIView):
         serializer = OrderSerializer(order)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    # -------------------- Actualizar Estado del Pedido --------------------
+    @action(detail=True, methods=['patch'], permission_classes=[permissions.IsAdminUser])
+    def update_status(self, request, pk=None):
+        order = self.get_object()  # Obtiene el pedido por ID
+        new_status = request.data.get("status")  # Recibe el nuevo estado del pedido
+
+        valid_statuses = [choice[0] for choice in Order.STATUS_CHOICES]  # Estado válido
+
+        if not new_status:
+            return Response(
+                {"error": "El campo 'status' es obligatorio"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if new_status not in valid_statuses:
+            return Response(
+                {"error": f"Estado inválido. Usa uno de: {valid_statuses}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        order.status = new_status  # Cambia el estado
+        order.save()  # Guarda el pedido actualizado
+
+        # Devuelve el pedido actualizado
+        serializer = OrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
@@ -75,4 +101,5 @@ class UserProfileView(APIView):
     def get(self, request):
         serializer = UsuarioSerializer(request.user)
         return Response(serializer.data)
+
 

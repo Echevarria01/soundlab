@@ -5,14 +5,12 @@ from .models import Order, OrderItem
 from .serializers import OrderSerializer
 from soundlab_store.models import Product
 
-
 class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     # ================================
-    #   QUERIES: Admin ve todo,
-    #   usuarios ven lo suyo
+    #   QUERIES: Admin ve todo, usuarios ven lo suyo
     # ================================
     def get_queryset(self):
         user = self.request.user
@@ -96,10 +94,21 @@ class OrderViewSet(viewsets.ModelViewSet):
     # ================================
     @action(detail=True, methods=['patch'], permission_classes=[permissions.IsAdminUser])
     def update_status(self, request, pk=None):
+        # Obtener el pedido
         order = self.get_object()
+
+        # Recibir el nuevo estado desde la solicitud
         new_status = request.data.get("status")
 
+        # Lista de estados válidos
         valid_statuses = [choice[0] for choice in Order.STATUS_CHOICES]
+
+        # Validar que el nuevo estado sea uno de los válidos
+        if not new_status:
+            return Response(
+                {"error": "El campo 'status' es obligatorio"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         if new_status not in valid_statuses:
             return Response(
@@ -107,9 +116,11 @@ class OrderViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        # Actualizar el estado del pedido
         order.status = new_status
         order.save()
 
+        # Retornar el pedido actualizado
         return Response(OrderSerializer(order).data, status=status.HTTP_200_OK)
 
     # ================================
@@ -121,6 +132,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         response['Access-Control-Allow-Methods'] = 'GET, POST, PATCH, PUT, DELETE, OPTIONS'
         response['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
         return response
+
 
 
 
