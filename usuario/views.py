@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
@@ -92,3 +92,11 @@ class UserProfileView(APIView):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+class ListUsersView(APIView):
+    permission_classes = [IsAdminUser]  # Solo admins pueden ver todos los usuarios
+
+    def get(self, request):
+        users = Usuario.objects.all()
+        serializer = UsuarioSerializer(users, many=True)
+        return Response(serializer.data)

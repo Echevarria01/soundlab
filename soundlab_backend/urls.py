@@ -11,7 +11,7 @@ def api_root(request):
             "auth": "/token/",
             "auth_refresh": "/token/refresh/",
             "user": "/user/",
-            "store": "/",
+            "store": "/store/",
             "orders": "/orders/"
         }
     })
@@ -29,7 +29,7 @@ urlpatterns = [
     path("user/", include("usuario.urls")),
 
     # Productos + Home
-    path("", include("soundlab_store.urls")),
+    path("store/", include("soundlab_store.urls")),  # prefijo store/
 
     # Orders
     path("orders/", include("orders.urls")),
