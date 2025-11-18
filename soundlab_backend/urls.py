@@ -32,6 +32,7 @@ urlpatterns = [
     path("store/", include("soundlab_store.urls")),  # Ruta de productos
 
     # Orders - ruta API de orders
-    path("api/", include("orders.urls")),  # Asegúrate de que esté con el prefijo /api/
+    path("api/", include("orders.urls")),
+    # Asegúrate de que esté con el prefijo /api/
 ]
 

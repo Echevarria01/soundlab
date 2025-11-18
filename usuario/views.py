@@ -2,17 +2,19 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
-from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth import logout, get_user_model
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
+
 from .serializers import UsuarioSerializer, MyTokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-
 Usuario = get_user_model()
 
-
+# -----------------------------
+# Registro de usuario
+# -----------------------------
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
@@ -23,30 +25,25 @@ class RegisterView(APIView):
         first_name = request.data.get('first_name', '')
         last_name = request.data.get('last_name', '')
 
-        # --- Validaciones básicas ---
         if not username or not email or not password:
             return Response({"error": "Todos los campos son obligatorios."}, status=400)
 
-        # Validar formato del correo
         try:
             validate_email(email)
         except ValidationError:
             return Response({"error": "El correo electrónico no es válido."}, status=400)
 
-        # Verificar si el usuario o email ya existen
         if Usuario.objects.filter(username=username).exists():
             return Response({"error": "El nombre de usuario ya está en uso."}, status=400)
 
         if Usuario.objects.filter(email=email).exists():
             return Response({"error": "Ya existe un usuario con este correo electrónico."}, status=400)
 
-        # Validar contraseña segura
         try:
             validate_password(password)
         except ValidationError as e:
             return Response({"error": list(e)}, status=400)
 
-        # Crear usuario cliente (no admin)
         user = Usuario.objects.create_user(
             username=username,
             email=email,
@@ -59,30 +56,31 @@ class RegisterView(APIView):
         return Response({"message": "Usuario registrado correctamente."}, status=201)
 
 
-class LoginView(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        username = request.data.get('username')
-        password = request.data.get('password')
-
-        if not username or not password:
-            return Response({"error": "Debe ingresar usuario y contraseña."}, status=400)
-
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return Response({"message": "Inicio de sesión exitoso."})
-        else:
-            return Response({"error": "Credenciales inválidas."}, status=401)
+# -----------------------------
+# Login con JWT
+# -----------------------------
+class LoginView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
 
 
+
+
+
+
+
+
+# -----------------------------
+# Logout
+# -----------------------------
 class LogoutView(APIView):
     def post(self, request):
         logout(request)
         return Response({"message": "Sesión cerrada correctamente."})
 
 
+# -----------------------------
+# Perfil de usuario autenticado
+# -----------------------------
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -90,13 +88,22 @@ class UserProfileView(APIView):
         serializer = UsuarioSerializer(request.user)
         return Response(serializer.data)
 
+
+# -----------------------------
+# Vista JWT estándar extendida
+# -----------------------------
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
+
+# -----------------------------
+# Solo admin puede ver todos los usuarios
+# -----------------------------
 class ListUsersView(APIView):
-    permission_classes = [IsAdminUser]  # Solo admins pueden ver todos los usuarios
+    permission_classes = [IsAdminUser]
 
     def get(self, request):
         users = Usuario.objects.all()
         serializer = UsuarioSerializer(users, many=True)
         return Response(serializer.data)
+
